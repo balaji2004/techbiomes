@@ -1,0 +1,71 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const fileInput = document.getElementById("file-upload");
+    const uploadForm = document.getElementById("uploadForm");
+    const loadingSpinner = document.getElementById("loading");
+    const resultsSection = document.getElementById("results");
+    const errorMessage = document.getElementById("error-message");
+    const predictionText = document.getElementById("prediction");
+    const confidenceText = document.getElementById("confidence");
+    const heatmapImage = document.getElementById("heatmap");
+
+    uploadForm.addEventListener("submit", (event) => {
+        event.preventDefault();  // Prevent default form submission
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showError("Please select a file before uploading.");
+            return;
+        }
+
+        if (!file.name.endsWith(".dcm")) {
+            showError("Invalid file format! Only DICOM (.dcm) files are allowed.");
+            return;
+        }
+
+        sendCTScan(file);
+    });
+
+    function sendCTScan(file) {
+        // Hide previous errors and results
+        errorMessage.style.display = "none";
+        resultsSection.style.display = "none";
+
+        // Show loading spinner
+        loadingSpinner.style.display = "block";
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/predict", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Server error! Unable to process scan.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide spinner and show results
+            loadingSpinner.style.display = "none";
+            resultsSection.style.display = "block";
+            resultsSection.classList.add("fade-in");
+
+            // Update results
+            predictionText.textContent = `Diagnosis: ${data.prediction}`;
+            confidenceText.textContent = `Confidence: ${data.confidence.toFixed(2)}%`;
+            heatmapImage.src = data.heatmap_path;
+        })
+        .catch(error => {
+            // Hide spinner and display error message
+            loadingSpinner.style.display = "none";
+            showError(error.message);
+        });
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+    }
+});

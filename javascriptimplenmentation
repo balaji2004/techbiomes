@@ -1,0 +1,120 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const fileInput = document.getElementById("file-upload");
+    const dropZone = document.getElementById("drop-zone");
+    const progressBar = document.getElementById("progress-bar");
+    const progressContainer = document.getElementById("progress-container");
+    const errorText = document.getElementById("error-message");
+    const resultsSection = document.getElementById("results");
+    const chartCanvas = document.getElementById("ai-chart");
+
+    fileInput.addEventListener("change", (event) => {
+        handleFileUpload(event.target.files[0]);
+    });
+
+    dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropZone.style.background = "#e8f0fe";
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+        dropZone.style.background = "#ffffff";
+    });
+
+    dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.style.background = "#ffffff";
+        handleFileUpload(event.dataTransfer.files[0]);
+    });
+
+    function handleFileUpload(file) {
+        if (!file) return;
+
+        // Reset error message
+        errorText.textContent = "";
+        errorText.style.display = "none";
+
+        // Validate file type and size
+        if (!file.name.endsWith(".dcm")) {
+            showError("Invalid file type! Please upload a DICOM (.dcm) file.");
+            return;
+        }
+        if (file.size > 500 * 1024 * 1024) {
+            showError("File size exceeds 500MB limit.");
+            return;
+        }
+
+        // Start upload with progress tracking
+        uploadFile(file);
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/upload", true);
+
+        // Show progress container
+        progressContainer.style.display = "block";
+
+        xhr.upload.onprogress = function (event) {
+            if (event.lengthComputable) {
+                let percentComplete = Math.round((event.loaded / event.total) * 100);
+                progressBar.style.width = percentComplete + "%";
+                progressBar.textContent = percentComplete + "%";
+            }
+        };
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                progressContainer.style.display = "none";
+                displayResults(JSON.parse(xhr.responseText));
+            } else {
+                showError("Upload failed! Please try again.");
+            }
+        };
+
+        xhr.onerror = function () {
+            showError("Network error occurred. Please check your connection.");
+        };
+
+        xhr.send(formData);
+    }
+
+    function showError(message) {
+        errorText.textContent = message;
+        errorText.style.display = "block";
+    }
+
+    function displayResults(data) {
+        resultsSection.classList.remove("hidden");
+
+        // Update AI probability scores
+        const labels = data.labels;  // Example: ["Tumor", "Normal"]
+        const scores = data.scores;  // Example: [85, 15]
+
+        const ctx = chartCanvas.getContext("2d");
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "AI Confidence Score (%)",
+                    data: scores,
+                    backgroundColor: ["#007BFF", "#28A745"],
+                    borderColor: ["#0056b3", "#1c7430"],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+});

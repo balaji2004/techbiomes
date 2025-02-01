@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CT Scan AI Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Upload Your CT Scan</h1>
+
+    <!-- Upload Form -->
+    <form id="uploadForm">
+        <input type="file" id="file-upload" accept=".dcm">
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p>Processing scan...</p>
+    </div>
+
+    <!-- Error Message -->
+    <p id="error-message" class="error hidden"></p>
+
+    <!-- Results Section -->
+    <section id="results" class="hidden">
+        <h3 id="prediction">Diagnosis: </h3>
+        <p id="confidence">Confidence: </p>
+        <img id="heatmap" src="" alt="AI Heatmap">
+    </section>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- Drag & Drop Upload Area -->
+<div class="upload-area" id="drop-zone">
+    <p>Drag & Drop your CT Scan here or Click to Upload</p>
+    <input type="file" id="file-upload" accept=".dcm" hidden>
+</div>
+
+<!-- Progress Bar -->
+<div id="progress-container" class="hidden">
+    <div id="progress-bar">0%</div>
+</div>
+
+<!-- Error Message -->
+<p id="error-message" class="error hidden"></p>
+
+<!-- AI Results Section -->
+<section class="results hidden" id="results">
+    <h3>Diagnosis Report</h3>
+    <canvas id="ai-chart"></canvas>
+</section>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>

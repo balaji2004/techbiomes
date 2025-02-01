@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CT Scan AI Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>AI-Powered CT Scan Analysis</h1>
+        <p>Upload your CT scan for AI-based diagnosis.</p>
+        <label for="file-upload" class="upload-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-width="2"
+                    d="M12 16V4m-4 4l4-4l4 4m-7 9h6m-8 3h10" />
+            </svg>
+            <span>Upload CT Scan</span>
+            <input type="file" id="file-upload" accept=".dcm, .png, .jpg" hidden>
+        </label>
+    </header>
+
+    <!-- Drag-and-Drop Upload Zone -->
+    <div class="upload-area" id="drop-zone">
+        <p>Drag & Drop your CT Scan here or Click to Upload</p>
+    </div>
+
+    <!-- Loading Animation -->
+    <div class="loading hidden" id="loading">
+        <div class="spinner"></div>
+        <p>Processing scan...</p>
+    </div>
+
+    <!-- Results Display Section -->
+    <section class="results hidden" id="results">
+        <div class="column">
+            <h3>Original Scan</h3>
+            <img id="original-image" src="" alt="Uploaded CT Scan">
+        </div>
+        <div class="column">
+            <h3>AI Highlights</h3>
+            <img id="ai-heatmap" src="" alt="AI Processed Image">
+        </div>
+        <div class="column">
+            <h3>Diagnosis Report</h3>
+            <p id="diagnosis-text">No report available.</p>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
